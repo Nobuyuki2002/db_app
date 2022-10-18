@@ -1,4 +1,4 @@
-package main.java.oit.is.ouyouteam.c04.db_app.db_app.security;
+package oit.is.ouyouteam.c04.db_app.db_app.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,23 +14,47 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class Sample3AuthConfiguration {
 	@Bean
-	public InMemoryUserDetailsManager userDetailsService() {
+    public InMemoryUserDetailsManager userDetailsService() {
 
-		UserBuilder users = User.builder();
+      UserBuilder users = User.builder();
 
-		// password: miren
-		UserDetails riku = users
-				.username("riku")
-				.password("$2y$10$PsdVJRM8G.D/nL2KNOgNm.0qOrDd867dlu2WKcyqNtPSjBTPorcNG")
-				.roles("RIKU")
-				.build();
-		// password: nobu
-		UserDetails mugi = users
-				.username("mugi")
-				.password("$2y$10$XTXq.UjPVMUX3qOHBKdAjOYijhrxqaV1SajRuC3GxwAUlZGt39vSy")
-				.roles("MUGI")
-				.build();
+      // password: miren
+      UserDetails riku = users
+          .username("riku")
+          .password("$2y$10$z1yfzTioUyaK6OJxXBZzw.7uzQ/6nARiW1ZdUb7Ty9WWgZ96O2uk2")
+          .roles("RIKU")
+          .build();
+      // password: nobu
+      UserDetails mugi = users
+          .username("mugi")
+          .password("$2y$10$hknbRnR94Pt1XyjEuemK2uDEAXJN257y.93yCkFyj4ZSHmr9D9jTy")
+          .roles("MUGI")
+          .build();
 
-		return new InMemoryUserDetailsManager(riku, mugi);
-	}
+      return new InMemoryUserDetailsManager(riku, mugi);
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+      http.formLogin();
+
+      http.authorizeHttpRequests().mvcMatchers("/sample4/**").authenticated();
+
+      http.logout().logoutSuccessUrl("/");
+
+      /**
+       * 以下2行はh2-consoleを利用するための設定なので，開発が完了したらコメントアウトすることが望ましい
+       * CSRFがONになっているとフォームが対応していないためアクセスできない
+       * HTTPヘッダのX-Frame-OptionsがDENYになるとiframeでlocalhostでのアプリが使えなくなるので，H2DBのWebクライアントのためだけにdisableにする必要がある
+       */
+      //http.csrf().disable();
+      //http.headers().frameOptions().disable();
+      return http.build();
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+      return new BCryptPasswordEncoder();
+    }
 }
