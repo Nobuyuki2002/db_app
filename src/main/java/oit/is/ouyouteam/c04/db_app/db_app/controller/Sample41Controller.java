@@ -1,11 +1,15 @@
 package oit.is.ouyouteam.c04.db_app.db_app.controller;
 
+import java.security.Principal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import oit.is.ouyouteam.c04.db_app.db_app.model.Chamber;
 import oit.is.ouyouteam.c04.db_app.db_app.model.ChamberMapper;
@@ -28,5 +32,23 @@ public class Sample41Controller {
     model.addAttribute("chamber2", chamber2);
 
     return "sample41.html";
+  }
+
+  @PostMapping("step3")
+  public String sample43(@RequestParam String name, Principal prin, ModelMap model) {
+    String loginUser = prin.getName();
+
+    Chamber chamber3 = new Chamber();
+    chamber3.setChamberName(name);
+    chamber3.setUserName(loginUser);
+    chamberMapper.insertChamber(chamber3);
+    model.addAttribute("name", name);
+    model.addAttribute("chamber3", chamber3);
+    return "sample43.html";
+  }
+
+  @GetMapping("step3")
+  public String sample43() {
+    return "sample43.html";
   }
 }
